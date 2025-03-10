@@ -11,6 +11,16 @@ export async function getUserCyclesController(req, res) {
     }
 }
 
+export async function getUserData(req, res) {
+    try {
+        const { userId } = req.params;
+        const aggregatedUser = await userService.getUserWithActiveCycles(userId);
+        res.json(aggregatedUser);
+    } catch (err) {
+        res.status(404).json({ error: err.message });
+    }
+}
+
 
 
 export async function updateUserController(req, res) {

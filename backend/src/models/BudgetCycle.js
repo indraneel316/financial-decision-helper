@@ -5,7 +5,7 @@ const { Schema, model } = mongoose;
 
 const BudgetCycleSchema = new Schema({
     userId: {
-        type: Number,
+        type: String,
         required: true
     },
     // Make sure every cycle has a unique identifier.
@@ -14,7 +14,6 @@ const BudgetCycleSchema = new Schema({
         required: true,
         unique: true
     },
-    // Optional descriptive name for the cycle.
     cycleName: {
         type: String
     },
@@ -42,11 +41,8 @@ const BudgetCycleSchema = new Schema({
     allocatedAccommodation: { type: Number, default: 0 },
     allocatedVacation:      { type: Number, default: 0 },
     allocatedOtherExpenses: { type: Number, default: 0 },
-    // Pre-aggregated field: overall spending in this cycle.
     spentSoFar: { type: Number, default: 0 },
-    // Pre-aggregated field: breakdown of spending per category.
     categorySpent: { type: Map, of: Number, default: {} },
-    // Status field to denote if this cycle is active, completed, or paused.
     status: { type: String, enum: ['active', 'completed'], default: 'active' }
 }, { timestamps: true });
 

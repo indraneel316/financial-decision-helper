@@ -51,9 +51,7 @@ const TransactionSchema = new Schema(
     { timestamps: true }
 );
 
-/**
- * Virtual populate to link Transaction -> User by custom user ID.
- */
+
 TransactionSchema.virtual('user', {
     ref: 'User',
     localField: 'userId',
@@ -61,9 +59,7 @@ TransactionSchema.virtual('user', {
     justOne: true
 });
 
-/**
- * Virtual populate to link Transaction -> BudgetCycle by custom cycle ID.
- */
+
 TransactionSchema.virtual('budgetCycle', {
     ref: 'BudgetCycle',
     localField: 'budgetCycleId',
@@ -71,9 +67,8 @@ TransactionSchema.virtual('budgetCycle', {
     justOne: true
 });
 
-/**
- * Post-save hook to update the BudgetCycle document's aggregate spending.
- */
+
+
 TransactionSchema.post('save', async function(doc) {
     try {
         const BudgetCycle = mongoose.model('BudgetCycle');

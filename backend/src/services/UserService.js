@@ -8,7 +8,7 @@ export async function getUserWithAllCycles(userId) {
         { $match: { userId } },
         {
             $lookup: {
-                from: 'BudgetCycle',
+                from: 'budgetcycles',
                 let: { uId: '$userId' },
                 pipeline: [
                     {
@@ -16,7 +16,7 @@ export async function getUserWithAllCycles(userId) {
                     },
                     {
                         $lookup: {
-                            from: 'Transaction',
+                            from: 'transactions',
                             let: { bcId: '$budgetCycleId' },
                             pipeline: [
                                 {
@@ -28,6 +28,57 @@ export async function getUserWithAllCycles(userId) {
                     }
                 ],
                 as: 'cycles'
+            }
+        }
+    ];
+
+    const result = await User.aggregate(pipeline);
+    if (!result || result.length === 0) {
+        throw new Error(`User with userId ${userId} not found`);
+    }
+    return result[0];
+}
+
+
+export async function getUserWithActiveCycles(userId) {
+    const pipeline = [
+        // Match the user by userId
+        { $match: { userId } },
+        {
+            $lookup: {
+                from: 'budgetcycles',
+                let: { uId: '$userId' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$userId', '$$uId'] }, // Match userId
+                                    { $eq: ['$status', 'active'] } // Only active cycles
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'transactions',
+                            let: { bcId: '$budgetCycleId' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                { $eq: ['$budgetCycleId', '$$bcId'] } // Match budget cycle
+                                            ]
+                                        }
+                                    }
+                                }
+                            ],
+                            as: 'transactions'
+                        }
+                    }
+                ],
+                as: 'cycle'
             }
         }
     ];
