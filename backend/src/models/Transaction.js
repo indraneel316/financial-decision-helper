@@ -4,8 +4,14 @@ const { Schema, model } = mongoose;
 
 const TransactionSchema = new Schema(
     {
+
+
         userId: {
-            type: Number,
+            type: String,
+            required: true
+        },
+        transactionId: {
+            type: String,
             required: true
         },
         budgetCycleId: {
